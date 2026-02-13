@@ -1,56 +1,40 @@
-import { Link } from "@heroui/link";
-import { Snippet } from "@heroui/snippet";
-import { Code } from "@heroui/code";
-import { button as buttonStyles } from "@heroui/theme";
+import { unpackAllSettled } from "~/lib/unpackAllSettled";
+import { BASE_URL } from "./config";
+import { z } from "zod";
 
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
+const reviewSchema = z.object({
+  _id: z.string(),
+  name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  rating: z.number(),
+  productId: z.string(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+  __v: z.number(),
+});
 
-export default function Home() {
+const reviewsResponseSchema = z.array(reviewSchema);
+
+export default async function Home() {
+  const [reviewsResult] = await Promise.allSettled([fetch(BASE_URL + "/reviews")]);
+
+  const reviews = await unpackAllSettled(reviewsResult, reviewsResponseSchema);
+
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-xl text-center justify-center">
-        <span className={title()}>Make&nbsp;</span>
-        <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
-        <br />
-        <span className={title()}>
-          websites regardless of your design experience.
-        </span>
-        <div className={subtitle({ class: "mt-4" })}>
-          Beautiful, fast and modern React UI library.
-        </div>
-      </div>
-
-      <div className="flex gap-3">
-        <Link
-          isExternal
-          className={buttonStyles({
-            color: "primary",
-            radius: "full",
-            variant: "shadow",
-          })}
-          href={siteConfig.links.docs}
-        >
-          Documentation
-        </Link>
-        <Link
-          isExternal
-          className={buttonStyles({ variant: "bordered", radius: "full" })}
-          href={siteConfig.links.github}
-        >
-          <GithubIcon size={20} />
-          GitHub
-        </Link>
-      </div>
-
-      <div className="mt-8">
-        <Snippet hideCopyButton hideSymbol variant="bordered">
-          <span>
-            Get started by editing <Code color="primary">app/page.tsx</Code>
-          </span>
-        </Snippet>
-      </div>
-    </section>
+    <>
+      <section className="mb-8">
+        <h2 className="text-2xl mb-4">Отзывы</h2>
+        <ul>
+          {reviews.map((review) => (
+            <li key={review._id} className="bg-gray-500 rounded-md p-2 mb-2">
+              <p>Имя: {review.name}</p>
+              <p>Заголовок: {review.title}</p>
+              <p>Описание: {review.description}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
   );
 }

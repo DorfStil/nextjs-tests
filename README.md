@@ -1,53 +1,59 @@
-# Next.js & HeroUI Template
+# Приложение Next.js (Auth + Reviews)
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+Фронтенд на Next.js с формами регистрации и логина, списком пользователей и списком отзывов.
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+## Что нужно для работы
 
-## Technologies Used
+- Node.js 18+ (рекомендуется 20+)
+- npm
+- Запущенный backend API на `http://localhost:3000/api`
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+Приложение ожидает, что API доступно по этим endpoint:
 
-## How to Use
+- `POST /auth/register`
+- `POST /auth/login`
+- `GET /users`
+- `GET /users/me`
+- `GET /reviews`
 
-### Use the template with create-next-app
+## Установка и запуск
 
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
-```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+1. Установить зависимости:
 
 ```bash
 npm install
 ```
 
-### Run the development server
+2. Запустить dev-сервер:
 
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
+3. Открыть приложение:
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
-
-```bash
-public-hoist-pattern[]=*@heroui/*
+```text
+http://localhost:8000
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+## Как пользоваться приложением
 
-## License
+1. Перейти на `/register` и создать пользователя (`login` + `password`).
+2. Перейти на `/login` и авторизоваться.
+3. После логина сохраняется `httpOnly` cookie `auth`.
+4. На `/users` отображается список пользователей (запрос с Bearer-токеном из cookie).
+5. На `/` отображается список отзывов.
+6. Кнопка `Выйти` удаляет cookie и переводит на `/login`.
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
+## Полезные команды
+
+```bash
+npm run dev    # запуск в режиме разработки (порт 8000)
+npm run build  # production-сборка
+npm run start  # запуск production-сборки
+npm run lint   # eslint --fix
+```
+
+## Примечание по доступу
+
+Проверка авторизации в `middleware.ts` сейчас закомментирована, поэтому роуты не блокируются без логина на уровне middleware.
